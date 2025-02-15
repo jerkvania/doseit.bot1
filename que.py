@@ -215,7 +215,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token("7085352038:AAHD5jSpLk_sYq4gLW44iukYhEa3YHafHDA").build()
+    application = ApplicationBuilder().token("7085352038:AAFntHQjbYLXUmjR1-tdUh6X8NvheLgHFIg").build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],  # Команда /start запускает опрос
