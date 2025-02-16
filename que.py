@@ -1,24 +1,14 @@
-import os
-import asyncio
-import logging
+import json
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
-    Application, CommandHandler, ConversationHandler, CallbackQueryHandler, ContextTypes
+    ApplicationBuilder, CommandHandler, ConversationHandler, CallbackQueryHandler, ContextTypes
 )
+import asyncio
 
-# 🔹 Настраиваем логирование
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# 🔹 Загружаем токен и вебхук URL из переменных окружения
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "7085352038:AAHD5jSpLk_sYq4gLW44iukYhEa3YHafHDA")
-WEBHOOK_URL = "https://doseit.bot1.onrender.com/webhook"
-PORT = int(os.getenv("PORT", 5000))
-
-# 🔹 Определяем состояния опроса
+# Define conversation states  
 LANGUAGE, QUESTION_1, QUESTION_2, QUESTION_3, QUESTION_4, QUESTION_5, QUESTION_6 = range(7)
 
-# 🔹 Словарь для хранения ответов пользователя
+# Dictionary to store user responses
 user_responses = {}
 
 # Language texts
@@ -224,8 +214,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(language_texts[lang]['cancel'])
     return ConversationHandler.END
 
-async def main():
-    application = Application.builder().token(TOKEN).build()
+if __name__ == '__main__':
+    application = ApplicationBuilder().token("7085352038:AAFntHQjbYLXUmjR1-tdUh6X8NvheLgHFIg").build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],  # Команда /start запускает опрос
@@ -242,30 +232,5 @@ async def main():
     )
 
     application.add_handler(conv_handler)
-
-    # 🔹 Удаляем старый вебхук перед установкой нового
-    logger.info("Удаление старого вебхука...")
-    await application.bot.delete_webhook()
-
-    # 🔹 Устанавливаем новый вебхук
-    logger.info(f"Устанавливаем вебхук: {WEBHOOK_URL}")
-    await application.bot.set_webhook(url=WEBHOOK_URL)
-
-    # 🔹 Запускаем сервер вебхука
-    await application.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        webhook_url=WEBHOOK_URL
-    )
-
-if __name__ == "__main__":
-    try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(main())
-    except Exception as e:
-        logger.error(f"Ошибка при запуске бота: {e}")
-    finally:
-        loop.run_until_complete(application.shutdown())
-        loop.close()
-
+    print("Bot is running...")
+    application.run_polling()
